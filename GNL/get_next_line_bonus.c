@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ccaluwe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/15 14:27:00 by ccaluwe           #+#    #+#             */
-/*   Updated: 2022/03/15 14:27:04 by ccaluwe          ###   ########.fr       */
+/*   Created: 2022/03/15 14:28:42 by ccaluwe           #+#    #+#             */
+/*   Updated: 2022/03/15 14:28:44 by ccaluwe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-/* Funtion that cuts everything of the string that's after NL */
+#include "get_next_line_bonus.h"
 
 char	*ft_get_line(char *save)
 {
@@ -42,8 +40,6 @@ char	*ft_get_line(char *save)
 	return (s);
 }
 
-/* Store everything after the NL for the next time the function is called */
-
 char	*ft_save(char *save)
 {
 	int		i;
@@ -70,12 +66,6 @@ char	*ft_save(char *save)
 	return (s);
 }
 
-/* create a buffer, and allocate mem for it.
- If we don't have a NL in already saved part
- we read BUFFER_SIZE elements into buffer and 0 teminate
- if error we free and return.
- We paste the new buffer at the end of save */
-
 char	*ft_read_and_save(int fd, char *save)
 {
 	char	*buff;
@@ -100,20 +90,17 @@ char	*ft_read_and_save(int fd, char *save)
 	return (save);
 }
 
-/* Checks validity of fd and BUFFER_SIZE,
- allocates memory for save and initiates function */
-
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*save;
+	static char	*save[4096];
 
-	if (fd < 0 || fd > 4096 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 4096)
 		return (0);
-	save = ft_read_and_save(fd, save);
-	if (!save)
+	save[fd] = ft_read_and_save(fd, save[fd]);
+	if (!save[fd])
 		return (NULL);
-	line = ft_get_line(save);
-	save = ft_save(save);
+	line = ft_get_line(save[fd]);
+	save[fd] = ft_save(save[fd]);
 	return (line);
 }
